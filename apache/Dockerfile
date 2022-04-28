@@ -6,16 +6,17 @@ RUN apt-get update && apt-get install -y \
 	zip \
 	unzip
 
-RUN docker-php-ext-install pdo pdo_mysql
+RUN docker-php-ext-install pdo pdo_mysql 
 
 COPY config/000-default.conf /etc/apache2/sites-available/000-default.conf
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-WORKDIR /app
+RUN groupadd -g 1000 www
+RUN useradd -u 1000 -ms /bin/bash -g www www
 
-COPY src/index.php /app/index.php
+WORKDIR /var/www/html
 
-# RUN composer create-project laravel/laravel www
+COPY src /var/www/html
 
-# CMD ["apache2-foreground"]
+RUN chmod -R www-data:www-data /var/www/html
